@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Enter Product — Shop</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F9F8F6;
+      --surface: #FFFFFF;
+      --ink: #1A1A18;
+      --muted: #7A7A72;
+      --accent: #3D6B4F;
+      --accent-light: #E8F0EB;
+      --border: #E4E2DC;
+      --radius: 12px;
+      --danger: #C0392B;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      padding: 48px 40px 32px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .shop-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 5vw, 3.25rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+
+    .shop-title span { color: var(--accent); }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      transition: color 0.15s ease;
+      padding: 10px 0;
+    }
+
+    .back-btn:hover { color: var(--ink); }
+
+    /* ── Main layout ── */
+    main {
+      padding: 48px 40px;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .form-intro {
+      margin-bottom: 36px;
+    }
+
+    .form-intro h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      font-weight: 400;
+      margin-bottom: 8px;
+    }
+
+    .form-intro p {
+      color: var(--muted);
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ── Form card ── */
+    .form-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    label {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+
+    label .required {
+      color: var(--accent);
+      margin-left: 2px;
+    }
+
+    .field-hint {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: -3px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="url"],
+    select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9375rem;
+      color: var(--ink);
+      background: var(--bg);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      outline: none;
+      appearance: none;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    input[type="url"]:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(61,107,79,0.12);
+    }
+
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+    }
+
+    /* ── Price field with $ prefix ── */
+    .price-wrapper {
+      position: relative;
+    }
+
+    .price-wrapper .prefix {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 0.9375rem;
+      pointer-events: none;
+    }
+
+    .price-wrapper input {
+      padding-left: 26px;
+    }
+
+    /* ── Image preview ── */
+    .image-preview {
+      margin-top: 10px;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      border-radius: 8px;
+      border: 1px dashed var(--border);
+      background: var(--accent-light);
+      overflow: hidden;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .image-preview.visible {
+      display: flex;
+    }
+
+    .image-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .image-preview .preview-placeholder {
+      color: var(--muted);
+      font-size: 0.8125rem;
+      text-align: center;
+      padding: 20px;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 8px 0;
+    }
+
+    /* ── Submit row ── */
+    .submit-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 14px;
+      margin-top: 32px;
+    }
+
+    .cancel-link {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: color 0.15s ease;
+    }
+
+    .cancel-link:hover { color: var(--ink); }
+
+    .submit-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 28px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    .submit-btn:hover:not(:disabled) {
+      background: #2e5139;
+      transform: translateY(-1px);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .spinner {
+      width: 15px;
+      height: 15px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+
+    .submit-btn.loading .spinner { display: block; }
+    .submit-btn.loading .btn-label { display: none; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Success overlay ── */
+    .success-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(249,248,246,0.92);
+      backdrop-filter: blur(6px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 20px;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .success-overlay.visible {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .success-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--accent-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .success-icon svg {
+      stroke: var(--accent);
+    }
+
+    .success-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.75rem;
+      font-weight: 400;
+    }
+
+    .success-subtitle {
+      color: var(--muted);
+      font-size: 0.9375rem;
+      max-width: 320px;
+    }
+
+    .success-redirect {
+      font-size: 0.8125rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* ── Error banner ── */
+    .error-banner {
+      display: none;
+      background: #fdf2f2;
+      border: 1px solid #f5c6c6;
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: var(--danger);
+      font-size: 0.875rem;
+      margin-top: 16px;
+    }
+
+    .error-banner.visible { display: block; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 40px;
+      color: var(--muted);
+      font-size: 0.8125rem;
+      border-top: 1px solid var(--border);
+      margin-top: 20px;
+    }
+
+    @media (max-width: 600px) {
+      header, main { padding: 24px 20px; }
+      .form-card { padding: 24px 20px; }
+      .submit-row { flex-direction: column-reverse; align-items: stretch; }
+      .submit-btn { justify-content: center; }
+      .cancel-link { text-align: center; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .submit-btn, .back-btn, input, select { transition: none; }
+      .spinner { animation: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header>
+  <div>
+    <h1 class="shop-title">Our <span>Shop</span></h1>
+  </div>
+  <a href="index.html" class="back-btn">
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8.5 3L4 7.5L8.5 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Back to Shop
+  </a>
+</header>
+
+<!-- ── Form ── -->
+<main>
+  <div class="form-intro">
+    <h2>Add a New Product</h2>
+    <p>Fill in the details below. Your product will appear in the shop once the Google Sheet is updated.</p>
+  </div>
+
+  <div class="form-card">
+    <div class="field-group" id="product-form">
+
+      <!-- Name -->
+      <div class="field">
+        <label for="name">Product Name <span class="required">*</span></label>
+        <input type="text" id="name" name="name" placeholder="e.g. Handcrafted Ceramic Mug" required />
+      </div>
+
+      <!-- Category -->
+      <div class="field">
+        <label for="category">Category <span class="required">*</span></label>
+        <input type="text" id="category" name="category" placeholder="e.g. Kitchenware, Home, Accessories…" required />
+      </div>
+
+      <!-- Price -->
+      <div class="field">
+        <label for="price">Price <span class="required">*</span></label>
+        <div class="price-wrapper">
+          <span class="prefix">$</span>
+          <input type="number" id="price" name="price" placeholder="0.00" min="0" step="0.01" required />
+        </div>
+      </div>
+
+      <!-- Image URL -->
+      <div class="field">
+        <label for="image">Image URL <span class="required">*</span></label>
+        <input type="url" id="image" name="image" placeholder="https://…" required />
+        <p class="field-hint">Paste a direct link to your product image (JPG, PNG, WebP).</p>
+        <div class="image-preview" id="image-preview">
+          <img id="preview-img" src="" alt="Preview" />
+        </div>
+      </div>
+
+    </div>
+
+    <hr class="divider" style="margin-top:28px;" />
+
+    <div class="submit-row">
+      <a href="index.html" class="cancel-link">Cancel</a>
+      <button class="submit-btn" id="submit-btn" type="button">
+        <span class="spinner"></span>
+        <span class="btn-label">Submit Product</span>
+      </button>
+    </div>
+
+    <div class="error-banner" id="error-banner"></div>
+  </div>
+</main>
+
+<footer>
+  Products are saved to Google Sheets and appear in the shop on the next page load.
+</footer>
+
+<!-- ── Success Overlay ── -->
+<div class="success-overlay" id="success-overlay">
+  <div class="success-icon">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M5.5 14.5L11 20L22.5 8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <p class="success-title">Product Added!</p>
+  <p class="success-subtitle">Your product has been submitted successfully and will appear in the shop shortly.</p>
+  <p class="success-redirect" id="redirect-msg">Redirecting you back to the shop in <span id="countdown">3</span>…</p>
+</div>
+
+<script>
+  // ── CONFIG ─────────────────────────────────────────────────────────────────
+  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxfLJ3hCOOe6e1L7Y8-BPEQckMKLyzRdIuWGVrCEpbKzUlxr5qawL6RNM_IPDDx957P/exec";
+  const REDIRECT_DELAY_SECONDS = 3;
+  // ───────────────────────────────────────────────────────────────────────────
+
+  const submitBtn  = document.getElementById('submit-btn');
+  const errorBanner = document.getElementById('error-banner');
+  const successOverlay = document.getElementById('success-overlay');
+  const countdownEl = document.getElementById('countdown');
+
+  // ── Live image preview ──────────────────────────────────────────────────
+  const imageInput   = document.getElementById('image');
+  const imagePreview = document.getElementById('image-preview');
+  const previewImg   = document.getElementById('preview-img');
+
+  let previewTimer;
+  imageInput.addEventListener('input', () => {
+    clearTimeout(previewTimer);
+    const url = imageInput.value.trim();
+    if (!url) { imagePreview.classList.remove('visible'); return; }
+    previewTimer = setTimeout(() => {
+      previewImg.src = url;
+      imagePreview.classList.add('visible');
+      previewImg.onerror = () => imagePreview.classList.remove('visible');
+    }, 500);
+  });
+
+  // ── Collect form values ─────────────────────────────────────────────────
+  function getFormData() {
+    return {
+      name:     document.getElementById('name').value.trim(),
+      category: document.getElementById('category').value.trim(),
+      price:    document.getElementById('price').value.trim(),
+      image:    document.getElementById('image').value.trim(),
+    };
+  }
+
+  function validate(data) {
+    if (!data.name)     return 'Please enter a product name.';
+    if (!data.category) return 'Please enter a category.';
+    if (!data.price || isNaN(parseFloat(data.price))) return 'Please enter a valid price.';
+    if (!data.image)    return 'Please enter an image URL.';
+    return null;
+  }
+
+  // ── Submit ──────────────────────────────────────────────────────────────
+  submitBtn.addEventListener('click', async () => {
+    const data = getFormData();
+    const validationError = validate(data);
+
+    // Clear previous error
+    errorBanner.textContent = '';
+    errorBanner.classList.remove('visible');
+
+    if (validationError) {
+      errorBanner.textContent = validationError;
+      errorBanner.classList.add('visible');
+      return;
+    }
+
+    // Loading state
+    submitBtn.disabled = true;
+    submitBtn.classList.add('loading');
+
+    // Build URL with query params matching Google Sheet column names
+    const params = new URLSearchParams({
+      name:     data.name,
+      category: data.category,
+      price:    data.price,
+      image:    data.image,
+    });
+
+    try {
+      const res = await fetch(`${WEB_APP_URL}?${params.toString()}`, {
+        method: 'GET',
+        mode: 'no-cors', // Google Apps Script requires no-cors for cross-origin GET
+      });
+
+      // no-cors returns opaque response — treat reaching here as success
+      showSuccess();
+    } catch (err) {
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('loading');
+      errorBanner.textContent = 'Submission failed. Check your internet connection and try again.';
+      errorBanner.classList.add('visible');
+      console.error(err);
+    }
+  });
+
+  // ── Success + countdown redirect ────────────────────────────────────────
+  function showSuccess() {
+    successOverlay.classList.add('visible');
+    let count = REDIRECT_DELAY_SECONDS;
+    countdownEl.textContent = count;
+    const timer = setInterval(() => {
+      count--;
+      countdownEl.textContent = count;
+      if (count <= 0) {
+        clearInterval(timer);
+        window.location.href = 'index.html';
+      }
+    }, 1000);
+  }
+</script>
+
+</body>
+</html>
